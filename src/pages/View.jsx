@@ -1,30 +1,64 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
-
+import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 const View = () => {
+
+  const [product, setProduct] = useState({})
+  const { id } = useParams()
+  console.log(id);
+  console.log(product);
+
+
+
+  useEffect(() => {
+    if (sessionStorage.getItem("allproducts")) {
+      const allProducts = JSON.parse(sessionStorage.getItem("allproducts"))
+      // console.log(allProducts.find(item=>item.id==id));
+      setProduct(allProducts.find(item => item.id == id))
+    }
+  }, [])
+
   return (
     <>
-    <Header/>
-    <div className='flex flex-col mx-5'>
-        <div className='grid grid-cols-2 items-center h-screen'>
-          <img width={'450px'} height={'200px'} src="https://cdn.shopify.com/s/files/1/0070/7032/articles/ecommerce_20shopping_20cart_4c343e41-1041-49d3-bca8-3d7d1aa06d90.png?v=1729263457" alt="" />
-          <div>
-            <h3 className='font-bold'>PID:id</h3>
-            <h1 className='text-5xl font-bold'>Product Name</h1>
-            <h4 className='font-bold text-red-600 text-2xl'>$ 250</h4>
-            <h4>Brand:brand</h4>
-            <h4>Ctegory:category</h4>
-            <p><span className='font-bold'>Description</span>: Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere corporis mollitia harum, error earum molestias explicabo tempore soluta deleniti eius. Officiis eos voluptate accusamus iure. Quia, aliquid hic! Magnam, deserunt.
+      <Header />
+      <div className='flex flex-col mx-5'>
+        <div className='grid grid-cols-2 items-center h-screen '>
+          <div >
+            <img width={'450px'} height={'200px'} className='ms-5' src={product?.thumbnail} alt="" />
             <div className='flex justify-between mt-5'>
               <button className='bg-blue-600 text-white p-2'>Add to Wishlist</button>
               <button className='bg-green-600 text-white p-2'>Add to Cart</button>
             </div>
+          </div>
+          <div>
+            <h3 className='font-bold'>PID:{product?.id}</h3>
+            <h1 className='text-5xl font-bold'>{product?.title}</h1>
+            <h4 className='font-bold text-red-600 text-2xl'>$ {product?.price}</h4>
+            <h4>Brand:{product?.brand}</h4>
+            <h4>Ctegory:{product?.category}</h4>
+            <p><span className='font-bold'>Description</span>:{product?.description}
+
             </p>
+            <h3 className='font-bold mt-5'>CLient Review</h3>
+            {
+              product?.reviews?.length > 0 ?
+                product?.reviews?.map(item => (
+                  <div key={item?.date} className='shadow-border p-2 mb-2'>
+                    <h5>
+                      <span className='font-bold'>{item?.reviewerName}</span> : <span>{item?.comment}</span>
+                    </h5>
+                    <p>Rating: {item?.rating} <i className='fa-solid fa-star text-yellow-400'></i></p>
+                  </div>
+                ))
+                :
+                <div>No Reviews yet!!!</div>
+            }
           </div>
         </div>
       </div>
-    </>    
+    </>
   )
 }
 
